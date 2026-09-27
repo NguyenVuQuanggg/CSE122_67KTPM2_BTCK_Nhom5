@@ -1,0 +1,24 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 100px;
+}
+
+.container {
+    padding: 30px;
+}
+
+h1 {
+    font-size: 100px;
+    margin: 0;
+}
+
+h2 {
+    font-size: 30px;
+}
+
+a {
+    text-decoration: none;
+    padding: 10px 20px;
+    border: 1px solid black;
+}
