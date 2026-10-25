@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GreenSort - Phân loại và thu gom rác</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div id="nav"></div>
+<div id="app"></div>
+<template id="tpl-index.html">
+<style>
+body { background: var(--bs-tertiary-bg); }
+</style>
+<div class="container py-5 text-center">
+  <h1 class="display-4">♻ GreenSort</h1>
+  <p class="lead">Nền tảng phân loại và thu gom rác thải cho cộng đồng</p>
+  <div id="actions" class="mb-5"></div>
+  <div class="row">
+    <div class="col-md-4 mb-3"><div class="card p-3"><h5>Phân loại đúng</h5><p class="mb-0">Tra cứu cách phân loại từng loại rác.</p></div></div>
+    <div class="col-md-4 mb-3"><div class="card p-3"><h5>Gửi yêu cầu</h5><p class="mb-0">Đặt lịch thu gom ngay tại nhà.</p></div></div>
+    <div class="col-md-4 mb-3"><div class="card p-3"><h5>Theo dõi</h5><p class="mb-0">Biết yêu cầu đang được xử lý đến đâu.</p></div></div>
+  </div>
+</div>
+</template>
+<template id="tpl-login.html">
+<style>
+body { background: var(--bs-tertiary-bg); }
+</style>
+<div class="container py-5" style="max-width:420px">
+  <h3 class="mb-3">Đăng nhập</h3>
+  <input id="email" class="form-control mb-2" placeholder="Email">
+  <input id="pass" type="password" class="form-control mb-2" placeholder="Mật khẩu">
+  <button class="btn btn-success w-100 mb-2" onclick="doLogin()">Đăng nhập</button>
+  <div id="msg" class="text-danger mb-2"></div>
+  <a href="#register.html">Đăng ký</a> | <a href="#forgot-password.html">Quên mật khẩu?</a>
+  <p class="text-muted small mt-3">Tài khoản thử (mật khẩu 123456): dan@gs.com, nv@gs.com, dp@gs.com, ad@gs.com</p>
+</div>
+</template>
+<template id="tpl-register.html">
+<style>
+body { background: var(--bs-tertiary-bg); }
+</style>
+<div class="container py-5" style="max-width:420px">
+  <h3 class="mb-3">Đăng ký tài khoản</h3>
+  <input id="name" class="form-control mb-2" placeholder="Họ tên">
+  <input id="email" class="form-control mb-2" placeholder="Email">
+  <input id="pass" type="password" class="form-control mb-2" placeholder="Mật khẩu (từ 6 ký tự)">
+  <input id="pass2" type="password" class="form-control mb-2" placeholder="Nhập lại mật khẩu">
+  <button class="btn btn-success w-100 mb-2" onclick="doRegister()">Đăng ký</button>
+  <div id="msg" class="text-danger mb-2"></div>
+  <a href="#login.html">Đã có tài khoản? Đăng nhập</a>
+</div>
+</template>
+<template id="tpl-forgot-password.html">
+<style>
+body { background: var(--bs-tertiary-bg); }
+</style>
+<div class="container py-5" style="max-width:420px">
+  <h3 class="mb-3">Khôi phục mật khẩu</h3>
+  <input id="email" class="form-control mb-2" placeholder="Email đã đăng ký">
+  <input id="pass" type="password" class="form-control mb-2" placeholder="Mật khẩu mới (từ 6 ký tự)">
+  <button class="btn btn-success w-100 mb-2" onclick="reset()">Đặt lại mật khẩu</button>
+  <div id="msg" class="text-danger mb-2"></div>
+  <a href="#login.html">Quay lại đăng nhập</a>
+</div>
+</template>
+<template id="tpl-profile.html">
+<style>
+body { background: var(--bs-tertiary-bg); }
+</style>
+<div class="container py-4" style="max-width:520px">
+  <h3>Hồ sơ cá nhân</h3>
+  <label>Họ tên</label><input id="name" class="form-control mb-2" disabled>
+  <label>Email</label><input id="email" class="form-control mb-2" disabled>
+  <label>Vai trò</label><input id="role" class="form-control mb-2" disabled>
+  <label>Số điện thoại</label><input id="phone" class="form-control mb-2">
+  <label>Địa chỉ</label><input id="address" class="form-control mb-2">
+  <button class="btn btn-success" onclick="save()">Lưu thay đổi</button>
+  <span id="msg" class="text-success ms-2"></span>
+</div>
+</template>
+<template id="tpl-settings.html">
+<style>
+body { background: var(--bs-tertiary-bg); }
+</style>
+<div class="container py-4" style="max-width:520px">
+  <h3>Cài đặt tài khoản</h3>
+  <div class="form-check form-switch mb-2"><input id="dark" type="checkbox" class="form-check-input"><label>Chế độ tối</label></div>
+  <div class="form-check form-switch mb-3"><input id="notif" type="checkbox" class="form-check-input"><label>Nhận thông báo</label></div>
+  <button class="btn btn-success mb-4" onclick="saveSettings()">Lưu cài đặt</button>
+  <h5>Đổi mật khẩu</h5>
+  <input id="old" type="password" class="form-control mb-2" placeholder="Mật khẩu cũ">
+  <input id="new" type="password" class="form-control mb-2" placeholder="Mật khẩu mới (từ 6 ký tự)">
+  <button class="btn btn-outline-success" onclick="changePass()">Đổi mật khẩu</button>
+</div>
+</template>
+<template id="tpl-notifications.html">
+<style>
+body { background: var(--bs-tertiary-bg); }
+</style>
+<div class="container py-4" style="max-width:700px">
+  <div class="d-flex justify-content-between mb-3">
+    <h3>Thông báo</h3>
+    <button class="btn btn-sm btn-outline-danger" onclick="clearMine()">Xóa tất cả</button>
+  </div>
+  <ul id="list" class="list-group"></ul>
+</div>
+</template>
+<template id="tpl-pages/resident-collection-points.html">
+<style>
+body { background: var(--bs-tertiary-bg); }
+</style>
+<div class="container py-4">
+  <h3>Tìm điểm thu gom</h3>
+  <select id="filter" class="form-select w-auto mb-3" onchange="show()"></select>
+  <table class="table table-bordered">
+    <thead><tr><th>Điểm</th><th>Địa chỉ</th><th>Nhận loại rác</th></tr></thead>
+    <tbody id="list"></tbody>
+  </table>
+</div>
+</template>
+<template id="tpl-pages/resident-pickup-request.html">
+<style>
+body { background: var(--bs-tertiary-bg); }
+</style>
+<div class="container py-4">
+  <h3>Gửi yêu cầu thu gom</h3>
+  <div class="row">
+    <div class="col-md-5 mb-3">
+      <select id="type" class="form-select mb-2"></select>
+      <input id="kg" type="number" min="1" class="form-control mb-2" placeholder="Khối lượng (kg)">
+      <input id="addr" class="form-control mb-2" placeholder="Địa chỉ thu gom">
+      <input id="date" type="date" class="form-control mb-2">
+      <button class="btn btn-success w-100" onclick="send()">Gửi yêu cầu</button>
+    </div>
+    <div class="col-md-7">
+      <h5>Yêu cầu của tôi</h5>
+      <ul id="list" class="list-group"></ul>
+    </div>
+  </div>
+</div>
+</template>
+<template id="tpl-pages/resident-waste-guide.html">
+<style>
+body { background: var(--bs-tertiary-bg); }
+</style>
+<div class="container py-4">
+  <h3>Hướng dẫn phân loại rác</h3>
+  <input id="search" class="form-control mb-3" placeholder="Tìm loại rác..." oninput="show()">
+  <div id="list" class="row"></div>
+</div>
+</template>
+<template id="tpl-pages/collector-request-detail.html">
+<style>
+body { background: var(--bs-tertiary-bg); }
+</style>
+<div class="container py-4" style="max-width:600px">
+  <h3>Xử lý yêu cầu</h3>
+  <select id="task" class="form-select mb-2" onchange="showInfo()"></select>
+  <div id="info" class="card p-3 mb-2"></div>
+  <select id="status" class="form-select mb-2">
+    <option>Đã phân công</option><option>Đang thu gom</option><option>Hoàn thành</option><option>Không thể thu gom</option>
+  </select>
+  <textarea id="note" class="form-control mb-2" placeholder="Ghi chú..."></textarea>
+  <button class="btn btn-success" onclick="save()">Cập nhật</button>
+  <span id="msg" class="text-success ms-2"></span>
+</div>
+</template>
+<template id="tpl-pages/collector-route-view.html">
+<style>
+body { background: var(--bs-tertiary-bg); }
+</style>
+<div class="container py-4">
+  <h3>Tuyến thu gom hôm nay</h3>
+  <div class="progress mb-3"><div id="bar" class="progress-bar bg-success"></div></div>
+  <ol id="list" class="list-group list-group-numbered"></ol>
+</div>
+</template>
+<template id="tpl-pages/collector-task-list.html">
+<style>
+body { background: var(--bs-tertiary-bg); }
+</style>
+<div class="container py-4">
+  <h3>Công việc của tôi</h3>
+  <div id="list" class="row"></div>
+</div>
+</template>
+<template id="tpl-pages/coordinator-analytics.html">
+<style>
+body { background: #fff8f0; }
+.num { font-size: 2rem; font-weight: bold; }
+</style>
+<div class="container py-4">
+  <h3>Số liệu và hiệu suất</h3>
+  <div class="row text-center mb-4">
+    <div class="col-4"><div class="card p-3">Tổng yêu cầu<div class="num" id="total"></div></div></div>
+    <div class="col-4"><div class="card p-3">Hoàn thành<div class="num" id="done"></div></div></div>
+    <div class="col-4"><div class="card p-3">Hiệu suất<div class="num" id="rate"></div></div></div>
+  </div>
+  <div class="card p-3">
+    <h5>Khối lượng theo loại rác (kg)</h5>
+    <div id="bars"></div>
+  </div>
+</div>
+</template>
+<template id="tpl-pages/coordinator-point-management.html">
+<style>
+body { background: #fff8f0; }
+</style>
+<div class="container py-4">
+  <h3>Quản lý điểm thu gom</h3>
+  <div class="row g-2 mb-3">
+    <div class="col-md-3"><input id="name" class="form-control" placeholder="Tên điểm"></div>
+    <div class="col-md-3"><input id="addr" class="form-control" placeholder="Địa chỉ"></div>
+    <div class="col-md-3"><input id="types" class="form-control" placeholder="Loại rác nhận (vd: Tái chế, Hữu cơ)"></div>
+    <div class="col-md-3"><button class="btn btn-warning w-100" onclick="addPoint()">Thêm điểm</button></div>
+  </div>
+  <table class="table table-bordered bg-white">
+    <thead><tr><th>Tên điểm</th><th>Địa chỉ</th><th>Loại rác nhận</th><th>Thao tác</th></tr></thead>
+    <tbody id="list"></tbody>
+  </table>
+</div>
+</template>
+<template id="tpl-pages/coordinator-request-board.html">
+<style>
+body { background: #fff8f0; }
+.badge-wait { background: #ffc107; color: #000; }
+</style>
+<div class="container py-4">
+  <h3>Bảng yêu cầu thu gom</h3>
+  <select id="filter" class="form-select w-auto mb-3" onchange="show()">
+    <option>Tất cả</option><option>Chờ phân công</option><option>Đã phân công</option><option>Đang thu gom</option><option>Hoàn thành</option>
+  </select>
+  <table class="table table-bordered bg-white">
+    <thead><tr><th>Mã</th><th>Địa chỉ</th><th>Trạng thái</th><th>Nhân viên</th></tr></thead>
+    <tbody id="list"></tbody>
+  </table>
+</div>
+</template>
+<template id="tpl-pages/admin-dashboard.html">
+<style>
+body { background: #f3f3f7; }
+.num { font-size: 1.8rem; font-weight: bold; }
+</style>
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Tổng quan hệ thống</h3>
+    <button class="btn btn-sm btn-outline-success" onclick="loadDashboard()">🔄 Làm mới</button>
+  </div>
+  <div class="row text-center g-3 mb-4" id="stats"></div>
+  <div class="card p-3 mb-4 shadow-sm">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0">📍 Tiến độ thu gom rác tại các điểm</h5>
+      <span class="badge bg-secondary" id="total-badge">0 yêu cầu</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr><th>Mã</th><th>Người gửi</th><th>Địa chỉ</th><th>Loại rác</th><th>Khối lượng</th><th>Nhân viên</th><th>Trạng thái</th></tr>
+        </thead>
+        <tbody id="request-list"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card p-3 shadow-sm">
+    <h5 class="mb-3">🔔 Hoạt động gần đây (Nhật ký hệ thống)</h5>
+    <ul class="list-group list-group-flush" id="logs"></ul>
+  </div>
+</div>
+</template>
+<template id="tpl-pages/admin-user-management.html">
+<style>
+body { background: #f3f3f7; }
+</style>
+<div class="container py-4">
+  <h3>Quản lý tài khoản và phân quyền</h3>
+  <input id="search" class="form-control w-50 mb-3" placeholder="Tìm theo tên..." oninput="show()">
+  <table class="table table-bordered bg-white">
+    <thead><tr><th>Họ tên</th><th>Vai trò</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+    <tbody id="list"></tbody>
+  </table>
+</div>
+</template>
+<template id="tpl-pages/admin-waste-type-management.html">
+<style>
+body { background: #f3f3f7; }
+</style>
+<div class="container py-4">
+  <h3>Quản lý loại rác</h3>
+  <div class="row g-2 mb-3">
+    <div class="col-md-4"><input id="name" class="form-control" placeholder="Tên loại rác"></div>
+    <div class="col-md-5"><input id="desc" class="form-control" placeholder="Mô tả"></div>
+    <div class="col-md-3"><button class="btn btn-dark w-100" onclick="addType()">Thêm loại</button></div>
+  </div>
+  <table class="table table-bordered bg-white">
+    <thead><tr><th>Tên</th><th>Mô tả</th><th>Thao tác</th></tr></thead>
+    <tbody id="list"></tbody>
+  </table>
+</div>
+</template>
+<template id="tpl-403.html">
+<style>
+body { height: 100vh; background: #f8f9fa; }
+.code { font-size: 8rem; font-weight: bold; color: #dc3545; }
+</style>
+<div class="d-flex align-items-center justify-content-center text-center" style="min-height:80vh">
+  <div>
+    <div class="code">403</div>
+    <h3>Không có quyền truy cập</h3>
+    <p>Bạn không có quyền xem trang này.</p>
+    <button class="btn btn-secondary" onclick="goBack()">Quay lại</button>
+    <a class="btn btn-success" href="#index.html">Về trang chủ</a>
+  </div>
+</div>
+</template>
+<template id="tpl-404.html">
+<style>
+body { height: 100vh; background: #f8f9fa; }
+.code { font-size: 8rem; font-weight: bold; color: #dc3545; }
+</style>
+<div class="d-flex align-items-center justify-content-center text-center" style="min-height:80vh">
+  <div>
+    <div class="code">404</div>
+    <h3>Không tìm thấy trang</h3>
+    <p>Đường dẫn không tồn tại hoặc đã bị xóa.</p>
+    <button class="btn btn-secondary" onclick="goBack()">Quay lại</button>
+    <a class="btn btn-success" href="#index.html">Về trang chủ</a>
+  </div>
+</div>
+</template>
+<script type="text/plain" id="js-index.html">
+var u = getUser();
+var html = "";
+if (u) {
+  html = "<a class='btn btn-success btn-lg' href='" + BASE + HOME[u.role] + "'>Vào hệ thống</a>";
+} else {
+  html = "<a class='btn btn-success btn-lg me-2' href='#login.html'>Đăng nhập</a>";
+  html += "<a class='btn btn-outline-success btn-lg' href='#register.html'>Đăng ký</a>";
+}
+document.getElementById("actions").innerHTML = html;
+</script>
+<script type="text/plain" id="js-login.html">
+function doLogin() {
+  var email = document.getElementById("email").value;
+  var pass = document.getElementById("pass").value;
+  var r = login(email, pass);
+  if (r == "notfound") {
+    document.getElementById("msg").innerHTML = "Sai email hoặc mật khẩu!";
+  } else if (r == "locked") {
+    document.getElementById("msg").innerHTML = "Tài khoản đã bị khóa!";
+  } else {
+    location.hash = HOME[r.role];
+  }
+}
+</script>
+<script type="text/plain" id="js-register.html">
+function doRegister() {
+  var name = document.getElementById("name").value;
+  var email = document.getElementById("email").value;
+  var pass = document.getElementById("pass").value;
+  var pass2 = document.getElementById("pass2").value;
+  var msg = document.getElementById("msg");
+  if (name == "" || email == "") { msg.innerHTML = "Vui lòng nhập đủ thông tin!"; return; }
+  if (pass.length < 6) { msg.innerHTML = "Mật khẩu tối thiểu 6 ký tự!"; return; }
+  if (pass != pass2) { msg.innerHTML = "Mật khẩu nhập lại không khớp!"; return; }
+  var users = DB.get("users");
+  for (var i = 0; i < users.length; i++) {
+    if (users[i].email == email || users[i].name == name) { msg.innerHTML = "Email hoặc họ tên đã tồn tại!"; return; }
+  }
+  users.push({name: name, email: email, password: pass, role: "Người dân", phone: "", address: "", active: true});
+  DB.set("users", users);
+  alert("Đăng ký thành công!");
+  location.hash = "login.html";
+}
+</script>
+<script type="text/plain" id="js-forgot-password.html">
+function reset() {
+  var email = document.getElementById("email").value;
+  var pass = document.getElementById("pass").value;
+  if (pass.length < 6) { document.getElementById("msg").innerHTML = "Mật khẩu tối thiểu 6 ký tự!"; return; }
+  var users = DB.get("users");
+  for (var i = 0; i < users.length; i++) {
+    if (users[i].email == email) {
+      users[i].password = pass;
+      DB.set("users", users);
+      alert("Đã đổi mật khẩu!");
+      location.hash = "login.html";
+      return;
+    }
+  }
+  document.getElementById("msg").innerHTML = "Không tìm thấy email này!";
+}
+</script>
+<script type="text/plain" id="js-profile.html">
+requireLogin();
+var user = getUser();
+document.getElementById("name").value = user.name;
+document.getElementById("email").value = user.email;
+document.getElementById("role").value = user.role;
+document.getElementById("phone").value = user.phone;
+document.getElementById("address").value = user.address;
+function save() {
+  var users = DB.get("users");
+  for (var i = 0; i < users.length; i++) {
+    if (users[i].email == user.email) {
+      users[i].phone = document.getElementById("phone").value;
+      users[i].address = document.getElementById("address").value;
+    }
+  }
+  DB.set("users", users);
+  document.getElementById("msg").innerHTML = "Đã lưu!";
+}
+</script>
+<script type="text/plain" id="js-settings.html">
+requireLogin();
+var user = getUser();
+var key = "set_" + user.email;
+var s = DB.get(key) || {dark: false, notif: true};
+document.getElementById("dark").checked = s.dark;
+document.getElementById("notif").checked = s.notif;
+function saveSettings() {
+  s.dark = document.getElementById("dark").checked;
+  s.notif = document.getElementById("notif").checked;
+  DB.set(key, s);
+  applyTheme();
+  renderNav();
+}
+function changePass() {
+  var users = DB.get("users");
+  var oldP = document.getElementById("old").value;
+  var newP = document.getElementById("new").value;
+  if (newP.length < 6) { alert("Mật khẩu mới tối thiểu 6 ký tự!"); return; }
+  for (var i = 0; i < users.length; i++) {
+    if (users[i].email == user.email) {
+      if (users[i].password != oldP) { alert("Mật khẩu cũ không đúng!"); return; }
+      users[i].password = newP;
+    }
+  }
+  DB.set("users", users);
+  alert("Đã đổi mật khẩu!");
+}
+</script>
+<script type="text/plain" id="js-notifications.html">
+requireLogin();
+var user = getUser();
+var list = DB.get("notifications");
+function show() {
+  var html = "";
+  for (var i = list.length - 1; i >= 0; i--) {
+    var n = list[i];
+    if (n.to != user.name && n.to != user.role) continue;
+    html += "<li class='list-group-item'>" + (n.read ? "" : "<span class='badge bg-danger me-2'>Mới</span>") + n.text;
+    html += "<br><small class='text-muted'>" + n.time + "</small></li>";
+    n.read = true;
+  }
+  if (html == "") html = "<li class='list-group-item'>Chưa có thông báo.</li>";
+  document.getElementById("list").innerHTML = html;
+  DB.set("notifications", list);
+  renderNav();
+}
+function clearMine() {
+  var rest = [];
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].to != user.name && list[i].to != user.role) rest.push(list[i]);
+  }
+  list = rest;
+  show();
+}
+show();
+</script>
+<script type="text/plain" id="js-pages/resident-collection-points.html">
+requireRole(["Người dân"]);
+var points = DB.get("points");
+var types = DB.get("types");
+var opts = "<option>Tất cả</option>";
+for (var k = 0; k < types.length; k++) {
+  opts += "<option>" + types[k].name + "</option>";
+}
+document.getElementById("filter").innerHTML = opts;
+function show() {
+  var f = document.getElementById("filter").value;
+  var html = "";
+  for (var i = 0; i < points.length; i++) {
+    var p = points[i];
+    var t = p.types || "Chưa cập nhật";
+    if (f != "Tất cả" && t.indexOf(f) == -1) continue;
+    html += "<tr><td>" + p.name + "</td><td>" + p.addr + "</td><td>" + t + "</td></tr>";
+  }
+  document.getElementById("list").innerHTML = html;
+}
+show();
+</script>
+<script type="text/plain" id="js-pages/resident-pickup-request.html">
+requireRole(["Người dân"]);
+var user = getUser();
+var types = DB.get("types");
+var requests = DB.get("requests");
+var opts = "";
+for (var k = 0; k < types.length; k++) {
+  opts += "<option>" + types[k].name + "</option>";
+}
+document.getElementById("type").innerHTML = opts;
+document.getElementById("addr").value = user.address;
+function show() {
+  var html = "";
+  for (var i = requests.length - 1; i >= 0; i--) {
+    var r = requests[i];
+    if (r.resident != user.name) continue;
+    html += "<li class='list-group-item d-flex justify-content-between'><span>#" + r.id + " " + r.type + " - " + r.kg + "kg<br><small>" + r.address + " · " + r.date + "</small></span>";
+    html += "<span class='badge bg-info align-self-center'>" + r.status + "</span></li>";
+  }
+  if (html == "") html = "<li class='list-group-item'>Bạn chưa có yêu cầu nào.</li>";
+  document.getElementById("list").innerHTML = html;
+}
+function send() {
+  var kg = document.getElementById("kg").value;
+  var addr = document.getElementById("addr").value;
+  var date = document.getElementById("date").value;
+  if (kg == "" || addr == "" || date == "") { alert("Vui lòng nhập đủ thông tin!"); return; }
+  var id = requests.length + 1;
+  requests.push({id: id, resident: user.name, address: addr, type: document.getElementById("type").value, kg: kg, date: date, status: "Chờ phân công", staff: "", note: ""});
+  DB.set("requests", requests);
+  notify("Điều phối viên", "Yêu cầu mới #" + id + " từ " + user.name);
+  document.getElementById("kg").value = "";
+  show();
+}
+show();
+</script>
+<script type="text/plain" id="js-pages/resident-waste-guide.html">
+requireRole(["Người dân"]);
+var types = DB.get("types");
+function show() {
+  var key = document.getElementById("search").value.toLowerCase();
+  var html = "";
+  for (var i = 0; i < types.length; i++) {
+    var t = types[i];
+    if ((t.name + " " + t.desc).toLowerCase().indexOf(key) == -1) continue;
+    html += "<div class='col-md-4 mb-3'><div class='card p-3'><h5>" + t.name + "</h5><p class='mb-0'>" + t.desc + "</p></div></div>";
+  }
+  if (html == "") html = "<p>Không tìm thấy.</p>";
+  document.getElementById("list").innerHTML = html;
+}
+show();
+</script>
+<script type="text/plain" id="js-pages/collector-request-detail.html">
+requireRole(["Nhân viên thu gom"]);
+var user = getUser();
+var requests = DB.get("requests");
+var id = new URLSearchParams(location.hash.split("?")[1] || "").get("id");
+var opts = "";
+for (var i = 0; i < requests.length; i++) {
+  if (requests[i].staff == user.name) opts += "<option value='" + requests[i].id + "'>#" + requests[i].id + " - " + requests[i].address + "</option>";
+}
+document.getElementById("task").innerHTML = opts;
+if (id) document.getElementById("task").value = id;
+function find() {
+  var cur = document.getElementById("task").value;
+  for (var i = 0; i < requests.length; i++) {
+    if (requests[i].id == cur) return requests[i];
+  }
+  return null;
+}
+function showInfo() {
+  var r = find();
+  if (r == null) { document.getElementById("info").innerHTML = "Bạn chưa có việc nào."; return; }
+  document.getElementById("info").innerHTML = "<b>#" + r.id + " " + r.type + " - " + r.kg + "kg</b><br>Người gửi: " + r.resident + "<br>Địa chỉ: " + r.address + "<br>Ngày: " + r.date;
+  document.getElementById("status").value = r.status;
+  document.getElementById("note").value = r.note;
+}
+function save() {
+  var r = find();
+  if (r == null) return;
+  r.status = document.getElementById("status").value;
+  r.note = document.getElementById("note").value;
+  DB.set("requests", requests);
+  notify(r.resident, "Yêu cầu #" + r.id + " của bạn: " + r.status);
+  document.getElementById("msg").innerHTML = "Đã cập nhật!";
+}
+showInfo();
+</script>
+<script type="text/plain" id="js-pages/collector-route-view.html">
+requireRole(["Nhân viên thu gom"]);
+var user = getUser();
+var requests = DB.get("requests");
+var total = 0;
+var done = 0;
+var html = "";
+for (var i = 0; i < requests.length; i++) {
+  var r = requests[i];
+  if (r.staff != user.name) continue;
+  total++;
+  if (r.status == "Hoàn thành") done++;
+  html += "<li class='list-group-item d-flex justify-content-between'><span>" + r.address + " (" + r.type + ")</span><span class='badge bg-secondary'>" + r.status + "</span></li>";
+}
+if (html == "") html = "<li class='list-group-item'>Chưa có điểm nào trên tuyến.</li>";
+document.getElementById("list").innerHTML = html;
+var percent = total == 0 ? 0 : Math.round(done / total * 100);
+document.getElementById("bar").style.width = percent + "%";
+document.getElementById("bar").innerHTML = percent + "%";
+</script>
+<script type="text/plain" id="js-pages/collector-task-list.html">
+requireRole(["Nhân viên thu gom"]);
+var user = getUser();
+var requests = DB.get("requests");
+function show() {
+  var html = "";
+  for (var i = 0; i < requests.length; i++) {
+    var r = requests[i];
+    if (r.staff != user.name) continue;
+    html += "<div class='col-md-4 mb-3'><div class='card p-3'><b>#" + r.id + " " + r.type + " - " + r.kg + "kg</b><small>" + r.address + "</small>";
+    html += "<span class='badge bg-secondary my-2'>" + r.status + "</span>";
+    if (r.status == "Đã phân công") html += "<button class='btn btn-sm btn-primary mb-1' onclick='start(" + i + ")'>Bắt đầu thu gom</button>";
+    html += "<a class='btn btn-sm btn-outline-success' href='#pages/collector-request-detail.html?id=" + r.id + "'>Xử lý</a></div></div>";
+  }
+  if (html == "") html = "<p>Bạn chưa được giao việc nào.</p>";
+  document.getElementById("list").innerHTML = html;
+}
+function start(i) {
+  requests[i].status = "Đang thu gom";
+  DB.set("requests", requests);
+  notify(requests[i].resident, "Yêu cầu #" + requests[i].id + " đang được thu gom");
+  show();
+}
+show();
+</script>
+<script type="text/plain" id="js-pages/coordinator-analytics.html">
+requireRole(["Điều phối viên"]);
+var requests = DB.get("requests");
+var total = requests.length;
+var done = 0;
+for (var d = 0; d < requests.length; d++) {
+  if (requests[d].status == "Hoàn thành") done++;
+}
+var wastes = [];
+var types = DB.get("types");
+for (var t = 0; t < types.length; t++) {
+  var sum = 0;
+  for (var q = 0; q < requests.length; q++) {
+    if (requests[q].type == types[t].name) sum += Number(requests[q].kg);
+  }
+  wastes.push({name: types[t].name, kg: sum});
+}
+document.getElementById("total").innerHTML = total;
+document.getElementById("done").innerHTML = done;
+document.getElementById("rate").innerHTML = (total == 0 ? 0 : Math.round(done / total * 100)) + "%";
+var max = 0;
+for (var i = 0; i < wastes.length; i++) {
+  if (wastes[i].kg > max) max = wastes[i].kg;
+}
+if (max == 0) max = 1;
+var html = "";
+for (var j = 0; j < wastes.length; j++) {
+  var percent = wastes[j].kg / max * 100;
+  html += "<p class='mb-1'>" + wastes[j].name + ": " + wastes[j].kg + "</p>";
+  html += "<div class='progress mb-3'><div class='progress-bar bg-success' style='width:" + percent + "%'></div></div>";
+}
+document.getElementById("bars").innerHTML = html;
+</script>
+<script type="text/plain" id="js-pages/coordinator-point-management.html">
+requireRole(["Điều phối viên"]);
+var points = DB.get("points");
+function show() {
+  var html = "";
+  for (var i = 0; i < points.length; i++) {
+    html += "<tr><td>" + points[i].name + "</td><td>" + points[i].addr + "</td><td>" + (points[i].types || "Tất cả loại") + "</td>";
+    html += "<td><button class='btn btn-sm btn-danger' onclick='removePoint(" + i + ")'>Xóa</button></td></tr>";
+  }
+  document.getElementById("list").innerHTML = html;
+}
+function addPoint() {
+  var name = document.getElementById("name").value;
+  var addr = document.getElementById("addr").value;
+  if (name == "" || addr == "") {
+    alert("Vui lòng nhập đủ thông tin!");
+    return;
+  }
+  points.push({name: name, addr: addr, types: document.getElementById("types").value || "Tất cả loại"});
+  DB.set("points", points);
+  document.getElementById("name").value = "";
+  document.getElementById("addr").value = "";
+  document.getElementById("types").value = "";
+  show();
+}
+function removePoint(i) {
+  if (confirm("Xóa điểm này?")) {
+    points.splice(i, 1);
+    DB.set("points", points);
+    show();
+  }
+}
+show();
+</script>
+<script type="text/plain" id="js-pages/coordinator-request-board.html">
+requireRole(["Điều phối viên"]);
+var requests = DB.get("requests");
+var staffs = getNames("Nhân viên thu gom");
+function show() {
+  var f = document.getElementById("filter").value;
+  var opts = "";
+  for (var k = 0; k < staffs.length; k++) {
+    opts += "<option>" + staffs[k] + "</option>";
+  }
+  var html = "";
+  for (var i = 0; i < requests.length; i++) {
+    var r = requests[i];
+    if (f != "Tất cả" && r.status != f) continue;
+    html += "<tr><td>" + r.id + "</td><td>" + r.address + "</td><td>" + r.status + "</td><td>";
+    if (r.staff == "") {
+      html += "<select id='s" + i + "'>" + opts + "</select> ";
+      html += "<button class='btn btn-sm btn-warning' onclick='assign(" + i + ")'>Giao</button>";
+    } else {
+      html += r.staff;
+    }
+    html += "</td></tr>";
+  }
+  document.getElementById("list").innerHTML = html;
+}
+function assign(i) {
+  requests[i].staff = document.getElementById("s" + i).value;
+  requests[i].status = "Đã phân công";
+  DB.set("requests", requests);
+  notify(requests[i].staff, "Bạn được giao yêu cầu #" + requests[i].id);
+  notify(requests[i].resident, "Yêu cầu #" + requests[i].id + " đã được giao cho " + requests[i].staff);
+  show();
+}
+show();
+</script>
+<script type="text/plain" id="js-pages/admin-dashboard.html">
+requireRole(["Quản trị viên"]);
+function loadDashboard() {
+  var users = api.get("users");
+  var requests = api.get("requests");
+  var points = api.get("points");
+  var types = api.get("types");
+  var notifications = api.get("notifications");
+
+  var pendingCount = 0;
+  var inProgressCount = 0;
+  var doneCount = 0;
+  var doneKg = 0;
+
+  for (var i = 0; i < requests.length; i++) {
+    var req = requests[i];
+    if (req.status === "Chờ phân công") pendingCount++;
+    else if (req.status === "Đã phân công" || req.status === "Đang thu gom") inProgressCount++;
+    else if (req.status === "Hoàn thành") { doneCount++; doneKg += Number(req.kg) || 0; }
+  }
+
+  var stats = [
+    { label: "Tổng yêu cầu", value: requests.length, color: "text-dark" },
+    { label: "Chờ điều phối", value: pendingCount, color: "text-warning" },
+    { label: "Đang thu gom", value: inProgressCount, color: "text-primary" },
+    { label: "Đã thu gom xong", value: doneCount, color: "text-success" },
+    { label: "Rác đã thu gom", value: doneKg + " kg", color: "text-success" },
+    { label: "Điểm thu gom", value: points.length, color: "text-info" },
+    { label: "Người dùng", value: users.length, color: "text-secondary" },
+    { label: "Loại rác", value: types.length, color: "text-secondary" }
+  ];
+
+  var htmlStats = "";
+  for (var s = 0; s < stats.length; s++) {
+    htmlStats += "<div class='col-6 col-md-3 mb-2'>";
+    htmlStats += "<div class='card p-3 h-100 shadow-sm border-0'>";
+    htmlStats += "<div class='text-muted small mb-1'>" + stats[s].label + "</div>";
+    htmlStats += "<div class='num " + stats[s].color + "'>" + stats[s].value + "</div>";
+    htmlStats += "</div></div>";
+  }
+  document.getElementById("stats").innerHTML = htmlStats;
+
+  document.getElementById("total-badge").innerText = requests.length + " yêu cầu";
+  var htmlRequests = "";
+  if (requests.length === 0) {
+    htmlRequests = "<tr><td colspan='7' class='text-center text-muted py-3'>Chưa có yêu cầu nào.</td></tr>";
+  } else {
+    for (var r = requests.length - 1; r >= 0; r--) {
+      var item = requests[r];
+      var badgeClass = "bg-secondary";
+      if (item.status === "Chờ phân công") badgeClass = "bg-warning text-dark";
+      else if (item.status === "Đã phân công") badgeClass = "bg-primary";
+      else if (item.status === "Đang thu gom") badgeClass = "bg-info text-dark";
+      else if (item.status === "Hoàn thành") badgeClass = "bg-success";
+
+      var staffText = item.staff ? item.staff : "<span class='text-muted italic'>Chưa giao</span>";
+      htmlRequests += "<tr><td>#" + item.id + "</td><td>" + item.resident + "</td><td>📍 " + item.address + "</td><td>" + item.type + "</td><td>" + item.kg + " kg</td><td>" + staffText + "</td><td><span class='badge " + badgeClass + "'>" + item.status + "</span></td></tr>";
+    }
+  }
+  document.getElementById("request-list").innerHTML = htmlRequests;
+
+  var recentLogs = [];
+  if (notifications && notifications.length > 0) {
+    for (var n = notifications.length - 1; n >= 0 && recentLogs.length < 6; n--) {
+      recentLogs.push({ text: notifications[n].text, time: notifications[n].time });
+    }
+  }
+  if (recentLogs.length < 3) {
+    for (var q = requests.length - 1; q >= 0 && recentLogs.length < 5; q--) {
+      var reqLog = requests[q];
+      recentLogs.push({
+        text: reqLog.resident + " đã gửi yêu cầu thu gom " + reqLog.type + " (" + reqLog.kg + "kg) tại " + reqLog.address,
+        time: reqLog.date || "Gần đây"
+      });
+    }
+  }
+
+  var htmlLogs = "";
+  for (var j = 0; j < recentLogs.length; j++) {
+    htmlLogs += "<li class='list-group-item d-flex justify-content-between align-items-center py-2'><span>📌 " + recentLogs[j].text + "</span><small class='text-muted'>" + recentLogs[j].time + "</small></li>";
+  }
+  document.getElementById("logs").innerHTML = htmlLogs;
+}
+loadDashboard();
+</script>
+<script type="text/plain" id="js-pages/admin-user-management.html">
+requireRole(["Quản trị viên"]);
+var roles = ["Người dân", "Nhân viên thu gom", "Điều phối viên", "Quản trị viên"];
+var users = DB.get("users");
+function show() {
+  var key = document.getElementById("search").value.toLowerCase();
+  var html = "";
+  for (var i = 0; i < users.length; i++) {
+    var u = users[i];
+    if (u.name.toLowerCase().indexOf(key) == -1) continue;
+    html += "<tr><td>" + u.name + "</td><td><select class='form-select form-select-sm' onchange='changeRole(" + i + ", this.value)'>";
+    for (var k = 0; k < roles.length; k++) {
+      var sel = (roles[k] == u.role) ? "selected" : "";
+      html += "<option " + sel + ">" + roles[k] + "</option>";
+    }
+    html += "</select></td>";
+    html += "<td>" + (u.active ? "Hoạt động" : "Đã khóa") + "</td>";
+    html += "<td><button class='btn btn-sm btn-secondary' onclick='toggle(" + i + ")'>" + (u.active ? "Khóa" : "Mở khóa") + "</button></td></tr>";
+  }
+  document.getElementById("list").innerHTML = html;
+}
+function changeRole(i, role) {
+  users[i].role = role;
+  DB.set("users", users);
+}
+function toggle(i) {
+  users[i].active = !users[i].active;
+  DB.set("users", users);
+  show();
+}
+show();
+</script>
+<script type="text/plain" id="js-pages/admin-waste-type-management.html">
+requireRole(["Quản trị viên"]);
+var types = DB.get("types");
+function show() {
+  var html = "";
+  for (var i = 0; i < types.length; i++) {
+    html += "<tr><td>" + types[i].name + "</td><td>" + types[i].desc + "</td>";
+    html += "<td><button class='btn btn-sm btn-danger' onclick='removeType(" + i + ")'>Xóa</button></td></tr>";
+  }
+  document.getElementById("list").innerHTML = html;
+}
+function addType() {
+  var name = document.getElementById("name").value;
+  var desc = document.getElementById("desc").value;
+  if (name == "") {
+    alert("Vui lòng nhập tên loại rác!");
+    return;
+  }
+  types.push({name: name, desc: desc});
+  DB.set("types", types);
+  document.getElementById("name").value = "";
+  document.getElementById("desc").value = "";
+  show();
+}
+function removeType(i) {
+  if (confirm("Xóa loại rác này?")) {
+    types.splice(i, 1);
+    DB.set("types", types);
+    show();
+  }
+}
+show();
+</script>
+<script type="text/plain" id="js-403.html">
+   function goBack() {
+     history.back();
+   }
+</script>
+<script type="text/plain" id="js-404.html">
+   function goBack() {
+     history.back();
+   }
+</script>
+<script>
+var BASE = "#";
+var SEED = {
+  users: [
+    {id: 1, name: "Người Dân A", email: "dan@gs.com", password: "123456", role: "Người dân", phone: "0901234567", address: "12 Lê Lợi", active: true},
+    {id: 2, name: "Nhân viên A", email: "nv@gs.com", password: "123456", role: "Nhân viên thu gom", phone: "0912345678", address: "34 Nguyễn Huệ", active: true},
+    {id: 3, name: "Điều phối B", email: "dp@gs.com", password: "123456", role: "Điều phối viên", phone: "0923456789", address: "56 Pasteur", active: true},
+    {id: 4, name: "Quản trị C", email: "ad@gs.com", password: "123456", role: "Quản trị viên", phone: "0934567890", address: "78 Hai Bà Trưng", active: true}
+  ],
+  requests: [
+    {id: 1, resident: "Người Dân A", address: "12 Lê Lợi", type: "Tái chế", kg: 5, date: "2025-01-10", status: "Chờ phân công", staff: "", note: ""},
+    {id: 2, resident: "Người Dân A", address: "45 Trần Phú", type: "Hữu cơ", kg: 8, date: "2025-01-11", status: "Đã phân công", staff: "Nhân viên A", note: ""}
+  ],
+  points: [
+    {id: 1, name: "Điểm A", addr: "12 Lê Lợi", types: "Tái chế, Nguy hại"},
+    {id: 2, name: "Điểm B", addr: "45 Trần Phú", types: "Hữu cơ, Tái chế"}
+  ],
+  types: [
+    {id: 1, name: "Hữu cơ", desc: "Thức ăn thừa, vỏ rau củ - bỏ thùng xanh lá"},
+    {id: 2, name: "Tái chế", desc: "Giấy, nhựa, kim loại sạch - bỏ thùng xanh dương"},
+    {id: 3, name: "Nguy hại", desc: "Pin, bóng đèn, hóa chất - mang đến điểm riêng"}
+  ],
+  notifications: []
+};
+var api = {
+  get: function(resource) {
+    var raw = localStorage.getItem("gs_" + resource);
+    var data = raw ? JSON.parse(raw) : (SEED[resource] || []);
+    console.log("%c[Fake API] GET /api/" + resource + " -> 200 OK (" + data.length + " bản ghi)", "color: #28a745; font-weight: bold;");
+    return data;
+  },
+  getById: function(resource, id) {
+    var list = this.get(resource);
+    for (var i = 0; i < list.length; i++) if (list[i].id == id) return list[i];
+    return null;
+  },
+  post: function(resource, newItem) {
+    var list = this.get(resource);
+    if (!newItem.id) {
+      var maxId = 0;
+      for (var i = 0; i < list.length; i++) if (list[i].id && Number(list[i].id) > maxId) maxId = Number(list[i].id);
+      newItem.id = maxId + 1;
+    }
+    list.push(newItem);
+    localStorage.setItem("gs_" + resource, JSON.stringify(list));
+    console.log("%c[Fake API] POST /api/" + resource + " -> 201 Created", "color: #0d6efd; font-weight: bold;", newItem);
+    return newItem;
+  },
+  put: function(resource, id, updateData) {
+    var list = this.get(resource);
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id == id) {
+        for (var p in updateData) list[i][p] = updateData[p];
+        localStorage.setItem("gs_" + resource, JSON.stringify(list));
+        console.log("%c[Fake API] PUT /api/" + resource + "/" + id + " -> 200 OK", "color: #fd7e14; font-weight: bold;");
+        return list[i];
+      }
+    }
+    return null;
+  },
+  delete: function(resource, id) {
+    var list = this.get(resource);
+    var filtered = [];
+    for (var i = 0; i < list.length; i++) if (list[i].id != id) filtered.push(list[i]);
+    localStorage.setItem("gs_" + resource, JSON.stringify(filtered));
+    console.log("%c[Fake API] DELETE /api/" + resource + "/" + id + " -> 200 OK", "color: #dc3545; font-weight: bold;");
+    return true;
+  },
+  saveAll: function(resource, list) {
+    localStorage.setItem("gs_" + resource, JSON.stringify(list));
+    return list;
+  }
+};
+var fakeApi = api;
+var DB = {
+  get: function (key) {
+    return api.get(key);
+  },
+  set: function (key, value) {
+    return api.saveAll(key, value);
+  }
+};
+var HOME = {
+  "Người dân": "pages/resident-waste-guide.html",
+  "Nhân viên thu gom": "pages/collector-task-list.html",
+  "Điều phối viên": "pages/coordinator-request-board.html",
+  "Quản trị viên": "pages/admin-dashboard.html"
+};
+var MENU = {
+  "Người dân": [["Hướng dẫn", "pages/resident-waste-guide.html"], ["Điểm thu gom", "pages/resident-collection-points.html"], ["Gửi yêu cầu", "pages/resident-pickup-request.html"]],
+  "Nhân viên thu gom": [["Công việc", "pages/collector-task-list.html"], ["Tuyến thu gom", "pages/collector-route-view.html"], ["Chi tiết", "pages/collector-request-detail.html"]],
+  "Điều phối viên": [["Bảng yêu cầu", "pages/coordinator-request-board.html"], ["Quản lý điểm", "pages/coordinator-point-management.html"], ["Phân tích", "pages/coordinator-analytics.html"]],
+  "Quản trị viên": [["Dashboard", "pages/admin-dashboard.html"], ["Điểm thu gom", "pages/coordinator-point-management.html"], ["Loại rác", "pages/admin-waste-type-management.html"], ["Người dùng", "pages/admin-user-management.html"]]
+};
+function getUser() {
+  var email = localStorage.getItem("gs_current");
+  var users = DB.get("users");
+  for (var i = 0; i < users.length; i++) {
+    if (users[i].email == email) return users[i];
+  }
+  return null;
+}
+function login(email, password) {
+  var users = DB.get("users");
+  for (var i = 0; i < users.length; i++) {
+    if (users[i].email == email && users[i].password == password) {
+      if (!users[i].active) return "locked";
+      localStorage.setItem("gs_current", email);
+      return users[i];
+    }
+  }
+  return "notfound";
+}
+function logout() {
+  localStorage.removeItem("gs_current");
+  location.href = BASE + "login.html";
+}
+function requireLogin() {
+  if (getUser() == null) location.href = BASE + "login.html";
+}
+function requireRole(roles) {
+  var u = getUser();
+  if (u == null) { location.href = BASE + "login.html"; }
+  else if (roles.indexOf(u.role) == -1) { location.href = BASE + "403.html"; }
+}
+function getNames(role) {
+  var users = DB.get("users");
+  var names = [];
+  for (var i = 0; i < users.length; i++) {
+    if (users[i].role == role && users[i].active) names.push(users[i].name);
+  }
+  return names;
+}
+function notify(to, text) {
+  var list = DB.get("notifications");
+  list.push({to: to, text: text, time: new Date().toLocaleString("vi-VN"), read: false});
+  DB.set("notifications", list);
+}
+function applyTheme() {
+  var u = getUser();
+  var s = u ? DB.get("set_" + u.email) : null;
+  document.documentElement.setAttribute("data-bs-theme", (s && s.dark) ? "dark" : "light");
+}
+function renderNav() {
+  var u = getUser();
+  var html = "<nav class='navbar navbar-expand navbar-dark bg-success px-3'>";
+  html += "<a class='navbar-brand' href='" + BASE + "index.html'>♻ GreenSort</a><div class='navbar-nav me-auto'>";
+  if (u) {
+    var m = MENU[u.role];
+    for (var i = 0; i < m.length; i++) {
+      html += "<a class='nav-link' href='" + BASE + m[i][1] + "'>" + m[i][0] + "</a>";
+    }
+  }
+  html += "</div><div class='navbar-nav align-items-center'>";
+  if (u) {
+    var list = DB.get("notifications");
+    var count = 0;
+    for (var j = 0; j < list.length; j++) {
+      if (!list[j].read && (list[j].to == u.name || list[j].to == u.role)) count++;
+    }
+    var st = DB.get("set_" + u.email);
+    var badge = (st && st.notif === false) ? "" : " <span class='badge bg-danger'>" + count + "</span>";
+    html += "<a class='nav-link' href='" + BASE + "notifications.html'>🔔" + badge + "</a>";
+    html += "<a class='nav-link' href='" + BASE + "profile.html'>" + u.name + "</a>";
+    html += "<a class='nav-link' href='" + BASE + "settings.html'>Cài đặt</a>";
+    html += "<button class='btn btn-sm btn-light ms-2' onclick='logout()'>Đăng xuất</button>";
+  } else {
+    html += "<a class='nav-link' href='" + BASE + "login.html'>Đăng nhập</a><a class='nav-link' href='" + BASE + "register.html'>Đăng ký</a>";
+  }
+  html += "</div></nav>";
+  document.getElementById("nav").innerHTML = html;
+}
+applyTheme();
+if (document.getElementById("nav")) renderNav();
+function showPage() {
+  var route = location.hash.slice(1).split("?")[0];
+  if (route == "") route = "index.html";
+  var tpl = document.getElementById("tpl-" + route);
+  if (tpl == null) { route = "404.html"; tpl = document.getElementById("tpl-404.html"); }
+  var app = document.getElementById("app");
+  app.innerHTML = "";
+  app.appendChild(tpl.content.cloneNode(true));
+  var old = document.getElementById("page-js");
+  if (old) old.remove();
+  var s = document.createElement("script");
+  s.id = "page-js";
+  s.text = document.getElementById("js-" + route).text;
+  document.body.appendChild(s);
+  renderNav();
+  window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", showPage);
+showPage();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

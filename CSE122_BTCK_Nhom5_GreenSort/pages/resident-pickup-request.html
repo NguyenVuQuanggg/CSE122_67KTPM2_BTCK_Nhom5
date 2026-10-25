@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gửi yêu cầu thu gom</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/resident-pickup-request.css">
+</head>
+<body>
+<div id="nav"></div>
+<div class="container py-4">
+  <h3>Gửi yêu cầu thu gom</h3>
+  <div class="row">
+    <div class="col-md-5 mb-3">
+      <select id="type" class="form-select mb-2"></select>
+      <input id="kg" type="number" min="1" class="form-control mb-2" placeholder="Khối lượng (kg)">
+      <input id="addr" class="form-control mb-2" placeholder="Địa chỉ thu gom">
+      <input id="date" type="date" class="form-control mb-2">
+      <button class="btn btn-success w-100" onclick="send()">Gửi yêu cầu</button>
+    </div>
+    <div class="col-md-7">
+      <h5>Yêu cầu của tôi</h5>
+      <ul id="list" class="list-group"></ul>
+    </div>
+  </div>
+</div>
+<script src="../js/api.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/resident-pickup-request.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Người Dân A",
+      "email": "dan@gs.com",
+      "password": "123456",
+      "role": "Người dân",
+      "phone": "0901234567",
+      "address": "12 Lê Lợi",
+      "active": true
+    },
+    {
+      "id": 2,
+      "name": "Nhân viên A",
+      "email": "nv@gs.com",
+      "password": "123456",
+      "role": "Nhân viên thu gom",
+      "phone": "0912345678",
+      "address": "34 Nguyễn Huệ",
+      "active": true
+    },
+    {
+      "id": 3,
+      "name": "Điều phối B",
+      "email": "dp@gs.com",
+      "password": "123456",
+      "role": "Điều phối viên",
+      "phone": "0923456789",
+      "address": "56 Pasteur",
+      "active": true
+    },
+    {
+      "id": 4,
+      "name": "Quản trị C",
+      "email": "ad@gs.com",
+      "password": "123456",
+      "role": "Quản trị viên",
+      "phone": "0934567890",
+      "address": "78 Hai Bà Trưng",
+      "active": true
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "resident": "Người Dân A",
+      "address": "12 Lê Lợi",
+      "type": "Tái chế",
+      "kg": 5,
+      "date": "2025-01-10",
+      "status": "Chờ phân công",
+      "staff": "",
+      "note": ""
+    },
+    {
+      "id": 2,
+      "resident": "Người Dân A",
+      "address": "45 Trần Phú",
+      "type": "Hữu cơ",
+      "kg": 8,
+      "date": "2025-01-11",
+      "status": "Đã phân công",
+      "staff": "Nhân viên A",
+      "note": ""
+    }
+  ],
+  "points": [
+    {
+      "id": 1,
+      "name": "Điểm A",
+      "addr": "12 Lê Lợi",
+      "types": "Tái chế, Nguy hại"
+    },
+    {
+      "id": 2,
+      "name": "Điểm B",
+      "addr": "45 Trần Phú",
+      "types": "Hữu cơ, Tái chế"
+    }
+  ],
+  "types": [
+    {
+      "id": 1,
+      "name": "Hữu cơ",
+      "desc": "Thức ăn thừa, vỏ rau củ - bỏ thùng xanh lá"
+    },
+    {
+      "id": 2,
+      "name": "Tái chế",
+      "desc": "Giấy, nhựa, kim loại sạch - bỏ thùng xanh dương"
+    },
+    {
+      "id": 3,
+      "name": "Nguy hại",
+      "desc": "Pin, bóng đèn, hóa chất - mang đến điểm riêng"
+    }
+  ],
+  "notifications": []
+}
